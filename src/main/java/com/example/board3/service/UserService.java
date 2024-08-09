@@ -8,6 +8,7 @@ import com.example.board3.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -47,6 +48,7 @@ public class UserService {
         return checkValueCondition;
     }
 
+    @Transactional
     public UserRequestDto register(UserRequestDto requestDto) {
 
         if(!checkSignupValueCondition(requestDto)) {
@@ -64,6 +66,7 @@ public class UserService {
         return requestDto;
     }
 
+    @Transactional
     public String login(LoginRequestDto requestDto) {
         User member = userRepository.findByUsername(requestDto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 회원입니다."));

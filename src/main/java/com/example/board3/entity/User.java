@@ -1,8 +1,12 @@
 package com.example.board3.entity;
 
 import com.example.board3.dto.UserRequestDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,6 +26,10 @@ public class User {
 
     @Column(length = 100)
     private String password;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    List<Board> boardList = new ArrayList<>();
 
     public User(UserRequestDto requestDto) {
         this.username = requestDto.getUsername();

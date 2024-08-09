@@ -20,13 +20,9 @@ public class BoardListResponseDto {
     private LocalDateTime modifiedAt;
 
     public BoardListResponseDto(Board board) {
+        this.username = board.getUser().getUsername();
         this.title = board.getTitle();
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
-    }
-    public BoardListResponseDto(Optional<Board> board) {
-        this.title = board.get().getTitle();
-        this.createdAt = board.get().getCreatedAt();
-        this.modifiedAt = board.get().getModifiedAt();
     }
 }

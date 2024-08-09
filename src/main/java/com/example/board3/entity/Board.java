@@ -26,10 +26,15 @@ public class Board extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    public Board(BoardRequestDto requestDto) {
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
+
+    public Board(User user, BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.password = requestDto.getPassword();
+        this.user = user;
     }
 
     public void update(BoardRequestDto requestDto) {

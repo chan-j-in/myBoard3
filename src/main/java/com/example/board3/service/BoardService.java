@@ -4,6 +4,7 @@ import com.example.board3.dto.BoardListResponseDto;
 import com.example.board3.dto.BoardRequestDto;
 import com.example.board3.dto.BoardResponseDto;
 import com.example.board3.entity.Board;
+import com.example.board3.entity.User;
 import com.example.board3.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,10 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
-    public BoardResponseDto createBoard(BoardRequestDto requestDto) {
-        Board board = new Board(requestDto);
+    public BoardResponseDto createBoard(User user, BoardRequestDto requestDto) {
+        Board board = new Board(user, requestDto);
         boardRepository.save(board);
-        return new BoardResponseDto(board);
+        return new BoardResponseDto(user, board);
     }
 
     public List<BoardListResponseDto> findAllBoard() {
@@ -43,18 +44,43 @@ public class BoardService {
     }
 
     @Transactional
-    public Long updateBoard(Long id, BoardRequestDto requestDto) {
+    public Long updateBoard(User user, Long id, BoardRequestDto requestDto) {
         Board board = boardRepository.findById(id).orElseThrow(
-                ()-> new IllegalArgumentException("해당 아이디가 존재하지 않습니다.")
+                ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
         );
-        board.update(requestDto);
-        return board.getId();
+
+        if(user.getUsername().equals(board.getUser().getUsername())) {
+            board.update(requestDto);
+            return board.getId();
+        } else {
+            throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
+        }
+
     }
 
     @Transactional
-    public Long deleteBoard(Long id) {
-        boardRepository.deleteById(id);
-        return id;
+    public Long deleteBoard(User user, Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+        );
+
+        if(user.getUsername().equals(board.getUser().getUsername())) {
+            boardRepository.deleteById(id);
+            return id;
+        } else {
+            throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
+        }
+    }
+
+    public boolean checkPassword(Long id, String inputPassword) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다.")
+        );
+        if (inputPassword.equals(board.getPassword())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
